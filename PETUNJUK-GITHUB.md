@@ -37,3 +37,7 @@
 
 ## Privasi
 Paket ini tidak mengirim transaksi ke server. Setiap perangkat menyimpan datanya sendiri. Siapa pun yang dapat membuka aplikasi pada perangkat dan browser yang sama berpotensi mengakses data lokalnya; GitHub Pages tidak menyediakan login pengguna untuk database lokal.
+
+
+## Versi 12.1
+- Menambahkan kredit kecil di sudut kanan bawah aplikasi: Design by: yb_wiguna · Versi 12.1.

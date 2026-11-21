@@ -46,6 +46,9 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertic
 #printHeader .print-brand-text h2{margin:0;font-size:17px}
 #printHeader .print-brand-text p{margin:4px 0 0;color:#334155}
 .report-meta{margin:0 0 12px;color:#475569;font-size:12px}
+.app-credit{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:10px 4px 14px;color:#718096;font-size:10px;letter-spacing:.2px;text-align:right}
+.app-credit strong{color:#52647d;font-weight:700}
+@media print{.app-credit{display:none!important}}
 .signatures{display:flex;justify-content:space-between;gap:25px;margin-top:40px;text-align:center}.signatures>div{width:45%}
 .group-card{border:1px solid var(--line);border-radius:10px;padding:13px;margin:10px 0}.group-card h3{margin-bottom:8px}
 @media(max-width:720px){.wrap{padding:11px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:20px}.stat strong{font-size:17px}.field{min-width:calc(50% - 10px)}}
@@ -468,4 +471,5 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
   });
 }
 </script>
+<div class="app-credit">Design by: <strong>yb_wiguna</strong><span>·</span>Versi 12.1</div>
 </body></html>
