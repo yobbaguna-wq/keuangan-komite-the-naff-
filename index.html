@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#174ea6">
+<meta name="description" content="Aplikasi laporan keuangan Komite SD The Naff Sidoarjo. Data tersimpan secara lokal pada perangkat.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Keuangan Komite SD The Naff</title>
+<style>
+:root{--blue:#2563eb;--navy:#123568;--bg:#f3f6fb;--ink:#172033;--muted:#64748b;--line:#dce4ef;--green:#12805c;--red:#bd3434}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px Arial,sans-serif}
+header{background:linear-gradient(120deg,#123568,#2563eb);color:#fff;padding:23px 16px}
+.wrap{max-width:1200px;margin:auto;padding:16px}h1{font-size:24px;margin:0 0 6px}h2{font-size:19px;margin:0 0 14px}h3{margin:0 0 8px}
+header p{margin:0;color:#dbeafe}.nav{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.nav .nav-tab{background:#e8eef8;color:#1e3a63;transition:background .15s,color .15s}
+.nav .nav-tab.active{background:#075bd8;color:#fff;box-shadow:0 3px 8px #075bd833}
+.panel{overflow:visible}
+.date-control{z-index:1}
+.date-control:has(.custom-calendar.open){z-index:100}
+button{border:0;border-radius:9px;padding:10px 13px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}
+button.alt{background:#e8eef8;color:#1e3a63}button.red{background:#b83232}button:disabled{opacity:.45;cursor:not-allowed}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px;margin-bottom:15px;box-shadow:0 2px 8px #17203308}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:15px}
+.stat{background:#f0f5ff;border-radius:11px;padding:14px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:20px;margin-top:7px;overflow-wrap:anywhere}
+.greenText{color:var(--green)}.redText{color:var(--red)}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px}
+label{font-size:13px;font-weight:700;color:#334155}input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:2px solid #bfdbfe;border-color:var(--blue)}
+.muted{color:var(--muted);font-size:13px}.headrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:850px;font-size:13px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#f2f6fb;color:#334155;white-space:nowrap}td.num,th.num{text-align:right;white-space:nowrap}
+.hidden{display:none!important}.actions{display:flex;gap:7px;flex-wrap:wrap}.notice{background:#fff8e6;border:1px solid #f2d58b;border-radius:10px;padding:11px;color:#72520c;font-size:13px}
+.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.date-control{position:relative;display:flex;gap:5px}.date-control .date-display{min-width:0;flex:1;cursor:pointer;background:#fff}.calendar-trigger{padding:8px 12px;background:#e8eef8;color:#1e3a63;border:1px solid #cbd5e1;border-radius:8px;font-size:17px}
+.custom-calendar{display:none;position:absolute;z-index:50;top:calc(100% + 5px);left:0;width:min(310px,calc(100vw - 42px));padding:12px;background:#fff;border:1px solid #cbd5e1;border-radius:12px;box-shadow:0 10px 30px #17203335}
+.custom-calendar.open{display:block}.calendar-selectors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.calendar-week,.calendar-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}.calendar-week span{font-size:11px;font-weight:700;color:#64748b;padding:5px 0}
+.calendar-days button{padding:8px 0;background:#f1f5f9;color:#172033;border-radius:7px;font-weight:500}.calendar-days button:hover{background:#dbeafe}.calendar-days button.selected{background:#2563eb;color:white}.calendar-days button.today{outline:1px solid #2563eb}.calendar-days button:disabled{visibility:hidden}
+.badge{display:inline-block;background:#eaf1ff;color:#1e40af;padding:4px 8px;border-radius:99px;font-size:12px;font-weight:700}
+#printHeader{display:none}.signatures{display:flex;justify-content:space-between;gap:25px;margin-top:40px;text-align:center}.signatures>div{width:45%}
+.group-card{border:1px solid var(--line);border-radius:10px;padding:13px;margin:10px 0}.group-card h3{margin-bottom:8px}
+@media(max-width:720px){.wrap{padding:11px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:20px}.stat strong{font-size:17px}.field{min-width:calc(50% - 10px)}}
+@media(max-width:420px){.cards{grid-template-columns:1fr 1fr}.field{min-width:100%}.nav button{flex:1}}
+@media print{body{background:#fff;font-size:11px}.no-print,header,.nav,footer,.notice{display:none!important}.wrap{max-width:none;padding:0}.panel{border:0;box-shadow:none;padding:0;margin:0 0 10px}#printHeader{display:block!important;text-align:center;margin-bottom:18px}.cards{grid-template-columns:repeat(4,1fr)}.stat{border:1px solid #bbb;background:white;padding:8px}table{min-width:0;font-size:9px}th,td{padding:5px 4px;border:1px solid #bbb}.signatures{margin-top:35px;break-inside:avoid}.group-card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="display:flex;align-items:center;gap:15px"><img src="logo-the-naff.png" alt="Logo SD Kreatif The Naff" style="width:76px;height:76px;object-fit:contain;background:#fff;border-radius:14px;padding:3px"><div><h1>Laporan Keuangan Komite SD The Naff</h1><p>Sistem buku kas umum dengan pengelompokan laporan pengeluaran</p></div></div></header>
+<div class="wrap">
+<div class="nav no-print">
+<button class="nav-tab active" data-tab="dashboard" onclick="showTab('dashboard')">Dashboard</button>
+<button class="nav-tab" data-tab="transaction" onclick="showTab('transaction')">Input Transaksi</button>
+<button class="nav-tab" data-tab="reports" onclick="showTab('reports')">Laporan</button>
+<button class="nav-tab" data-tab="backup" onclick="showTab('backup')">Backup Data</button>
+</div>
+
+<section id="dashboard">
+ <div class="cards">
+  <div class="stat"><small>Saldo Awal Kas</small><strong id="dOpening">Rp0</strong></div>
+  <div class="stat"><small>Total Pemasukan</small><strong class="greenText" id="dIncome">Rp0</strong></div>
+  <div class="stat"><small>Total Pengeluaran</small><strong class="redText" id="dExpense">Rp0</strong></div>
+  <div class="stat"><small>Saldo Kas Saat Ini</small><strong id="dBalance">Rp0</strong></div>
+ </div>
+ <div class="panel">
+  <div class="headrow"><h2>Pengaturan Kas</h2><span class="badge">Buku Kas Umum</span></div>
+  <div class="row"><div class="field"><label>Saldo awal kas (Rp)</label><input id="openingBalance" type="number" min="0" step="1"></div><button onclick="saveOpening()">Simpan Saldo Awal</button></div>
+  <p class="muted">Saldo awal hanya dicatat satu kali sebagai saldo pembuka buku kas. Seluruh pemasukan dan pengeluaran setelahnya dihitung secara global.</p>
+ </div>
+ <div class="panel"><div class="headrow"><h2>Ringkasan Pengeluaran per Kelompok</h2><button class="alt" onclick="showTab('reports')">Lihat Laporan</button></div><div id="dashboardGroups"></div></div>
+ <div class="panel"><h2>Transaksi Terbaru</h2><div class="tablewrap"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Uraian</th><th>Kelompok</th><th class="num">Masuk</th><th class="num">Keluar</th></tr></thead><tbody id="recentRows"></tbody></table></div><p id="noRecent" class="empty">Belum ada transaksi.</p></div>
+</section>
+
+<section id="transaction" class="hidden">
+ <div class="panel">
+  <h2>Input Transaksi Keuangan</h2>
+  <p class="muted">Gunakan satu formulir untuk mencatat penerimaan maupun pengeluaran. Pilih jenis transaksi terlebih dahulu.</p>
+  <form id="unifiedForm" class="row">
+   <div class="field"><label>Jenis transaksi</label><select id="uType"><option value="income">Penerimaan</option><option value="expense">Pengeluaran</option></select></div>
+   <div class="field"><label>Tanggal</label><div class="date-control"><input class="date-display" id="uDateDisplay" type="text" placeholder="Pilih tanggal" readonly required onclick="event.preventDefault();event.stopPropagation();openDatePicker('u')"><button type="button" class="calendar-trigger" onclick="event.preventDefault();event.stopPropagation();openDatePicker('u')">▾</button><input id="uDate" type="hidden"><div class="custom-calendar" id="uDatePicker"><div class="calendar-selectors"><select id="uDateMonth"></select><select id="uDateYear"></select></div><div class="calendar-week"><span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span></div><div class="calendar-days" id="uDateDays"></div></div></div></div>
+   <div class="field" style="flex:2"><label id="uDescLabel">Uraian penerimaan</label><input id="uDesc" required placeholder="Masukkan uraian transaksi"></div>
+   <div class="field hidden" id="uGroupField" style="flex:2"><label>Kelompok laporan / kegiatan</label><input id="uGroup" list="groupOptions" placeholder="Contoh: Lomba 17 Agustus"></div>
+   <div class="field"><label>Kuantitas</label><input id="uQty" type="number" min="0" step="0.01" value="1" required></div>
+   <div class="field"><label>Satuan</label><input id="uUnit" placeholder="siswa, pcs, paket"></div>
+   <div class="field"><label>Harga satuan (Rp)</label><input id="uPrice" type="number" min="0" step="1" value="0" required></div>
+   <div class="field"><label>Total (otomatis)</label><input id="uTotal" value="Rp0" readonly></div>
+   <button id="uSubmit">Simpan Penerimaan</button><button type="button" class="alt hidden" id="uCancel" onclick="cancelUnifiedEdit()">Batal Edit</button>
+  </form>
+ </div>
+ <div class="panel">
+  <div class="headrow"><h2>Daftar Transaksi Kas</h2><strong id="uGrandTotal">-</strong></div>
+  <div class="tablewrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Jenis</th><th>Uraian</th><th>Kelompok</th><th class="num">Qty</th><th>Satuan</th><th class="num">Harga Satuan</th><th class="num">Total</th><th class="no-print">Aksi</th></tr></thead><tbody id="uRows"></tbody></table></div>
+  <p id="uEmpty" class="empty">Belum ada transaksi.</p>
+ </div>
+</section>
+
+<section id="income" class="hidden">
+ <div class="panel"><h2>Input Pemasukan Umum</h2><p class="muted">Pemasukan dicatat langsung ke kas umum dan tidak perlu dikaitkan dengan kegiatan tertentu.</p>
+  <form id="incomeForm" class="row">
+   <div class="field"><label>Tanggal</label><div class="date-control"><input class="date-display" id="iDateDisplay" type="text" placeholder="Pilih tanggal" readonly required onclick="event.preventDefault();event.stopPropagation();openDatePicker('i')"><button type="button" class="calendar-trigger" onclick="event.preventDefault();event.stopPropagation();openDatePicker('i')">▾</button><input id="iDate" type="hidden"><div class="custom-calendar" id="iDatePicker"><div class="calendar-selectors"><select id="iDateMonth"></select><select id="iDateYear"></select></div><div class="calendar-week"><span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span></div><div class="calendar-days" id="iDateDays"></div></div></div></div>
+   <div class="field" style="flex:2"><label>Uraian pemasukan</label><input id="iDesc" required placeholder="Contoh: Bantuan donatur"></div>
+   <div class="field"><label>Kuantitas</label><input id="iQty" type="number" min="0" step="0.01" value="1"></div>
+   <div class="field"><label>Satuan</label><input id="iUnit" placeholder="orang, paket, dll."></div>
+   <div class="field"><label>Harga satuan (Rp)</label><input id="iPrice" type="number" min="0" step="1" value="0"></div>
+   <div class="field"><label>Total pemasukan</label><input id="iTotal" readonly value="Rp0"></div>
+   <button id="iSubmit">Simpan Pemasukan</button><button type="button" class="alt hidden" id="iCancel" onclick="cancelEdit('income')">Batal Edit</button>
+  </form>
+ </div>
+ <div class="panel"><div class="headrow"><h2>Daftar Pemasukan Umum</h2><strong id="incomeTotal">Rp0</strong></div><div class="tablewrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Uraian</th><th class="num">Qty</th><th>Satuan</th><th class="num">Harga Satuan</th><th class="num">Total</th><th class="no-print">Aksi</th></tr></thead><tbody id="incomeRows"></tbody></table></div><p id="noIncome" class="empty">Belum ada pemasukan umum.</p></div>
+</section>
+
+<section id="student" class="hidden">
+ <div class="panel"><h2>Penerimaan dari Siswa</h2><p class="muted">Formulir khusus penerimaan/iuran siswa. Penerimaan ini juga langsung menambah kas umum dan tidak terikat pada kegiatan tertentu.</p>
+  <form id="studentForm" class="row">
+   <div class="field"><label>Tanggal</label><div class="date-control"><input class="date-display" id="sDateDisplay" type="text" placeholder="Pilih tanggal" readonly required onclick="event.preventDefault();event.stopPropagation();openDatePicker('s')"><button type="button" class="calendar-trigger" onclick="event.preventDefault();event.stopPropagation();openDatePicker('s')">▾</button><input id="sDate" type="hidden"><div class="custom-calendar" id="sDatePicker"><div class="calendar-selectors"><select id="sDateMonth"></select><select id="sDateYear"></select></div><div class="calendar-week"><span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span></div><div class="calendar-days" id="sDateDays"></div></div></div></div>
+   <div class="field" style="flex:2"><label>Uraian penerimaan</label><input id="sDesc" required placeholder="Contoh: Iuran kegiatan siswa"></div>
+   <div class="field"><label>Kuantitas</label><input id="sQty" type="number" min="0" step="0.01" value="1"></div>
+   <div class="field"><label>Satuan</label><input id="sUnit" placeholder="siswa, orang, kelas"></div>
+   <div class="field"><label>Harga satuan (Rp)</label><input id="sPrice" type="number" min="0" step="1" value="0"></div>
+   <div class="field"><label>Total penerimaan</label><input id="sTotal" readonly value="Rp0"></div>
+   <button id="sSubmit">Simpan Penerimaan</button><button type="button" class="alt hidden" id="sCancel" onclick="cancelEdit('student')">Batal Edit</button>
+  </form>
+ </div>
+ <div class="panel"><div class="headrow"><h2>Daftar Penerimaan dari Siswa</h2><strong id="studentTotal">Rp0</strong></div><div class="tablewrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Uraian</th><th class="num">Qty</th><th>Satuan</th><th class="num">Harga Satuan</th><th class="num">Total</th><th class="no-print">Aksi</th></tr></thead><tbody id="studentRows"></tbody></table></div><p id="noStudent" class="empty">Belum ada penerimaan dari siswa.</p></div>
+</section>
+
+<section id="expense" class="hidden">
+ <div class="panel"><h2>Input Pengeluaran / Belanja</h2><p class="muted">Semua belanja dicatat dalam satu buku kas. Isi kolom kelompok agar belanja dengan nama kelompok yang sama terkumpul dalam satu laporan.</p>
+  <form id="expenseForm" class="row">
+   <div class="field"><label>Tanggal</label><div class="date-control"><input class="date-display" id="eDateDisplay" type="text" placeholder="Pilih tanggal" readonly required onclick="event.preventDefault();event.stopPropagation();openDatePicker('e')"><button type="button" class="calendar-trigger" onclick="event.preventDefault();event.stopPropagation();openDatePicker('e')">▾</button><input id="eDate" type="hidden"><div class="custom-calendar" id="eDatePicker"><div class="calendar-selectors"><select id="eDateMonth"></select><select id="eDateYear"></select></div><div class="calendar-week"><span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span></div><div class="calendar-days" id="eDateDays"></div></div></div></div>
+   <div class="field" style="flex:2"><label>Uraian belanja</label><input id="eDesc" required placeholder="Contoh: Pembelian air mineral"></div>
+   <div class="field" style="flex:2"><label>Kelompok laporan / kegiatan</label><input id="eGroup" list="groupOptions" required placeholder="Contoh: Lomba 17 Agustus"><datalist id="groupOptions"></datalist></div>
+   <div class="field"><label>Kuantitas</label><input id="eQty" type="number" min="0" step="0.01" value="1"></div>
+   <div class="field"><label>Satuan</label><input id="eUnit" placeholder="dus, pcs, paket"></div>
+   <div class="field"><label>Harga satuan (Rp)</label><input id="ePrice" type="number" min="0" step="1" value="0"></div>
+   <div class="field"><label>Total belanja</label><input id="eTotal" readonly value="Rp0"></div>
+   <button id="eSubmit">Simpan Pengeluaran</button><button type="button" class="alt hidden" id="eCancel" onclick="cancelEdit('expense')">Batal Edit</button>
+  </form>
+ </div>
+ <div class="panel"><div class="headrow"><h2>Daftar Pengeluaran / Belanja</h2><strong id="expenseTotal">Rp0</strong></div><div class="tablewrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Uraian Belanja</th><th>Kelompok</th><th class="num">Qty</th><th>Satuan</th><th class="num">Harga Satuan</th><th class="num">Total</th><th class="no-print">Aksi</th></tr></thead><tbody id="expenseRows"></tbody></table></div><p id="noExpense" class="empty">Belum ada pengeluaran.</p></div>
+</section>
+
+<section id="reports" class="hidden">
+ <div class="panel no-print"><h2>Filter Laporan Pengeluaran</h2><div class="row"><div class="field"><label>Kelompok laporan</label><select id="reportGroup"><option value="">Semua kelompok</option></select></div><button onclick="renderReports()">Tampilkan</button><button class="alt" onclick="printReports()">Cetak / Simpan PDF</button><button class="alt" onclick="exportCSV()">Unduh Excel (CSV)</button></div><p class="muted">Pilih satu kelompok untuk melihat rincian pengeluaran kegiatan tersebut. Pilih Semua kelompok untuk rekap gabungan.</p></div>
+ <div class="panel" id="reportArea">
+  <div id="printHeader"><h2 style="margin:0">KOMITE SEKOLAH SD THE NAFF</h2><h3>LAPORAN KEUANGAN</h3><p id="printSubtitle"></p></div>
+  <div class="cards"><div class="stat"><small>Saldo Awal</small><strong id="rOpening">Rp0</strong></div><div class="stat"><small>Total Pemasukan</small><strong class="greenText" id="rIncome">Rp0</strong></div><div class="stat"><small>Total Pengeluaran</small><strong class="redText" id="rExpense">Rp0</strong></div><div class="stat"><small>Saldo Akhir</small><strong id="rBalance">Rp0</strong></div></div>
+  <h2 id="reportHeading">Rekap Pengeluaran per Kelompok</h2><div id="groupReports"></div>
+  <div class="signatures"><div>Mengetahui,<br>Ketua Komite<br><br><br><br>(........................................)</div><div>Bendahara<br><br><br><br><br>(........................................)</div></div>
+ </div>
+</section>
+
+<section id="backup" class="hidden">
+ <div class="panel"><h2>Backup dan Pemulihan Data</h2><div class="notice">Data tersimpan di browser/perangkat ini. Buat backup berkala agar data tidak hilang jika browser atau perangkat bermasalah.</div>
+ <p>Backup mencakup saldo awal, pemasukan umum, penerimaan siswa, dan seluruh pengeluaran beserta kelompok laporannya.</p>
+ <div class="actions"><button onclick="backup()">Unduh Backup Data (JSON)</button><button class="alt" onclick="document.getElementById('restoreFile').click()">Pulihkan dari Backup</button><input id="restoreFile" class="hidden" type="file" accept=".json,application/json"></div><p id="backupStatus" class="muted"></p></div>
+ <div class="panel"><h2>Informasi Penyimpanan</h2><p id="storageInfo" class="muted"></p><button class="red" onclick="clearAll()">Hapus Seluruh Data</button></div>
+</section>
+<footer>Aplikasi lokal Komite SD The Naff · Buku kas global · Backup data secara berkala.</footer>
+</div>
+
+<script>
+const DBKEY='theNaffFinance_v10';
+let db=loadDB(),editing={income:null,student:null,expense:null};
+function blankDB(){return{opening:0,incomes:[],studentReceipts:[],expenses:[]}}
+function loadDB(){
+ try{
+  const current=localStorage.getItem(DBKEY);if(current)return normalize(JSON.parse(current));
+  const oldKeys=['theNaffFinance_v9','theNaffFinance_v8','theNaffFinance_v7','theNaffFinance_v6','theNaffFinance_v5','theNaffFinance_v4','theNaffFinance_v3','theNaffFinance_v2','theNaffFinance_v1'];
+  for(const key of oldKeys){const raw=localStorage.getItem(key);if(!raw)continue;const old=JSON.parse(raw);
+   if(Array.isArray(old.activities)){
+    const migrated=blankDB();
+    old.activities.forEach(a=>{
+     migrated.opening+=Number(a.opening)||0;
+     (a.transactions||[]).forEach(t=>{
+      const total=Number(t.total??((Number(t.qty)||0)*(Number(t.price)||0)));
+      if(Number(t.in)>0)migrated.incomes.push({id:uid(),date:t.date,desc:t.desc||'Pemasukan dari migrasi',qty:Number(t.qty)||1,unit:t.unit||'',price:Number(t.price)||Number(t.in),total:Number(t.in)});
+      if(Number(t.out)>0)migrated.expenses.push({id:uid(),date:t.date,desc:t.desc||'Pengeluaran dari migrasi',group:a.name||'Hasil migrasi kegiatan',qty:Number(t.qty)||1,unit:t.unit||'',price:Number(t.price)||Number(t.out),total:Number(t.out)});
+     });
+     (a.studentReceipts||[]).forEach(r=>migrated.studentReceipts.push({...r,id:uid(),total:Number(r.total??((Number(r.qty)||0)*(Number(r.price)||0)))}));
+    });
+    localStorage.setItem(DBKEY,JSON.stringify(migrated));return migrated;
+   }
+  }
+  return blankDB();
+ }catch(e){return blankDB()}
+}
+function normalize(x){
+ const incomes=Array.isArray(x.incomes)?x.incomes.slice():[];
+ const student=Array.isArray(x.studentReceipts)?x.studentReceipts:[];
+ student.forEach(r=>incomes.push({...r,source:'Penerimaan dari siswa'}));
+ incomes.forEach(r=>{if(!r.source)r.source='Penerimaan umum'});
+ return{opening:Number(x.opening)||0,incomes,studentReceipts:[],expenses:Array.isArray(x.expenses)?x.expenses:[]}
+}
+function uid(){return crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2)}
+function save(){localStorage.setItem(DBKEY,JSON.stringify(db));renderAll()}
+const money=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dateText=s=>s?new Date(s+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}):'-';
+function totalOf(x){return Number(x.total??((Number(x.qty)||0)*(Number(x.price)||0)))}
+function totals(){const income=db.incomes.reduce((s,x)=>s+totalOf(x),0)+db.studentReceipts.reduce((s,x)=>s+totalOf(x),0),expense=db.expenses.reduce((s,x)=>s+totalOf(x),0);return{income,expense,balance:(Number(db.opening)||0)+income-expense}}
+function showTab(id){
+ ['dashboard','transaction','income','student','expense','reports','backup'].forEach(x=>{const el=document.getElementById(x);if(el)el.classList.toggle('hidden',x!==id)});
+ document.querySelectorAll('.nav .nav-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===id));
+ document.querySelectorAll('.custom-calendar').forEach(el=>el.classList.remove('open'));
+ renderAll();
+}
+function saveOpening(){db.opening=Math.max(0,Number(openingBalance.value)||0);save();alert('Saldo awal kas berhasil disimpan.')}
+function setupCalendar(prefix){
+ const month=document.getElementById(prefix+'DateMonth'),year=document.getElementById(prefix+'DateYear');
+ month.innerHTML=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'].map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+ const now=new Date().getFullYear();year.innerHTML=Array.from({length:41},(_,i)=>now-20+i).map(y=>`<option value="${y}">${y}</option>`).join('');
+ month.addEventListener('change',()=>renderCalendar(prefix));year.addEventListener('change',()=>renderCalendar(prefix));
+ month.addEventListener('click',e=>e.stopPropagation());year.addEventListener('click',e=>e.stopPropagation());
+}
+['i','s','e','u'].forEach(setupCalendar);
+function todayISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function displayISO(iso){if(!iso)return '';const [y,m,d]=iso.split('-').map(Number);return String(d).padStart(2,'0')+' '+['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][m-1]+' '+y}
+function syncDisplay(prefix){document.getElementById(prefix+'DateDisplay').value=displayISO(document.getElementById(prefix+'Date').value)}
+function openDatePicker(prefix){
+ const popup=document.getElementById(prefix+'DatePicker');
+ const dateField=document.getElementById(prefix+'Date');
+ const monthField=document.getElementById(prefix+'DateMonth');
+ const yearField=document.getElementById(prefix+'DateYear');
+ if(!popup||!dateField||!monthField||!yearField){console.error('Komponen kalender tidak ditemukan:',prefix);return false}
+ document.querySelectorAll('.custom-calendar').forEach(x=>{if(x!==popup)x.classList.remove('open')});
+ const iso=dateField.value||todayISO(),parts=iso.split('-').map(Number),y=parts[0],m=parts[1];
+ monthField.value=String(m-1);yearField.value=String(y);
+ renderCalendar(prefix);popup.classList.add('open');return false;
+}
+function renderCalendar(prefix){
+ const year=Number(document.getElementById(prefix+'DateYear').value),month=Number(document.getElementById(prefix+'DateMonth').value),holder=document.getElementById(prefix+'DateDays'),selected=document.getElementById(prefix+'Date').value;
+ holder.innerHTML='';const offset=new Date(year,month,1).getDay(),count=new Date(year,month+1,0).getDate();
+ for(let i=0;i<offset;i++){const b=document.createElement('button');b.type='button';b.disabled=true;holder.appendChild(b)}
+ for(let day=1;day<=count;day++){const b=document.createElement('button');b.type='button';b.textContent=day;const iso=year+'-'+String(month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');if(iso===selected)b.classList.add('selected');if(iso===todayISO())b.classList.add('today');b.onclick=()=>{document.getElementById(prefix+'Date').value=iso;syncDisplay(prefix);document.getElementById(prefix+'DatePicker').classList.remove('open')};holder.appendChild(b)}
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.date-control'))document.querySelectorAll('.custom-calendar').forEach(x=>x.classList.remove('open'))});
+function bindCalc(qtyId,priceId,totalId){const calc=()=>document.getElementById(totalId).value=money((Number(document.getElementById(qtyId).value)||0)*(Number(document.getElementById(priceId).value)||0));document.getElementById(qtyId).addEventListener('input',calc);document.getElementById(priceId).addEventListener('input',calc)}
+bindCalc('iQty','iPrice','iTotal');bindCalc('sQty','sPrice','sTotal');bindCalc('eQty','ePrice','eTotal');
+
+function formData(prefix,kind){
+ const qty=Number(document.getElementById(prefix+'Qty').value)||0,price=Number(document.getElementById(prefix+'Price').value)||0;
+ const item={id:editing[kind]||uid(),date:document.getElementById(prefix+'Date').value,desc:document.getElementById(prefix+'Desc').value.trim(),qty,unit:document.getElementById(prefix+'Unit').value.trim(),price,total:qty*price};
+ if(kind==='expense')item.group=document.getElementById('eGroup').value.trim();
+ return item;
+}
+function saveForm(kind,prefix,arrName){
+ const form=document.getElementById(kind+'Form');form.addEventListener('submit',e=>{
+  e.preventDefault();const item=formData(prefix,kind);if(!item.date||!item.desc){alert('Lengkapi tanggal dan uraian.');return}
+  if(item.qty<=0){alert('Kuantitas harus lebih dari nol.');return}
+  const arr=db[arrName],idx=arr.findIndex(x=>x.id===editing[kind]);if(idx>=0)arr[idx]=item;else arr.push(item);
+  cancelEdit(kind,false);form.reset();document.getElementById(prefix+'Date').value='';document.getElementById(prefix+'DateDisplay').value='';document.getElementById(prefix+'Qty').value=1;document.getElementById(prefix+'Price').value=0;document.getElementById(prefix+'Total').value=money(0);if(kind==='expense')document.getElementById('eGroup').value='';save();
+ });
+}
+
+saveForm('income','i','incomes');saveForm('student','s','studentReceipts');saveForm('expense','e','expenses');
+let unifiedEditing=null;
+function updateUnifiedType(){
+ const type=uType.value,isIncome=type==='income';
+ uGroupField.classList.toggle('hidden',isIncome);
+ uDescLabel.textContent=isIncome?'Uraian penerimaan':'Uraian belanja';
+ uDesc.placeholder=isIncome?'Contoh: Iuran siswa atau bantuan donatur':'Contoh: Pembelian air mineral';
+ uSubmit.textContent=isIncome?'Simpan Penerimaan':'Simpan Pengeluaran';
+}
+uType.addEventListener('change',updateUnifiedType);
+function updateUnifiedTotal(){uTotal.value=money((Number(uQty.value)||0)*(Number(uPrice.value)||0))}
+uQty.addEventListener('input',updateUnifiedTotal);uPrice.addEventListener('input',updateUnifiedTotal);
+unifiedForm.addEventListener('submit',e=>{
+ e.preventDefault();
+ const type=uType.value;
+ const arrName=type==='expense'?'expenses':'incomes';
+ const arr=db[arrName],qty=Number(uQty.value)||0,price=Number(uPrice.value)||0;
+ if(!uDate.value||!uDesc.value.trim()){alert('Lengkapi tanggal dan uraian transaksi.');return}
+ if(qty<=0){alert('Kuantitas harus lebih dari nol.');return}
+ if(type==='expense'&&!uGroup.value.trim()){alert('Isi kelompok laporan/kegiatan untuk pengeluaran.');return}
+ const item={id:unifiedEditing?.id||uid(),date:uDate.value,desc:uDesc.value.trim(),qty,unit:uUnit.value.trim(),price,total:qty*price};
+ if(type==='expense')item.group=uGroup.value.trim();
+ if(unifiedEditing){
+  const oldArr=db[unifiedEditing.arrName],idx=oldArr.findIndex(x=>x.id===unifiedEditing.id);
+  if(idx>=0)oldArr.splice(idx,1);
+ }
+ arr.push(item);
+ cancelUnifiedEdit(false);unifiedForm.reset();uDate.value='';uDateDisplay.value='';uQty.value=1;uPrice.value=0;uTotal.value=money(0);uType.value='income';updateUnifiedType();save();
+});
+function editUnified(arrName,id){
+ const arr=db[arrName],item=arr.find(x=>x.id===id);if(!item)return;
+ const type=arrName==='expenses'?'expense':'income';
+ unifiedEditing={arrName,id};uType.value=type;updateUnifiedType();
+ uDate.value=item.date||'';syncDisplay('u');uDesc.value=item.desc||'';uQty.value=item.qty??1;uUnit.value=item.unit||'';uPrice.value=item.price||0;uTotal.value=money(totalOf(item));uGroup.value=item.group||'';
+ uSubmit.textContent='Simpan Perubahan';uCancel.classList.remove('hidden');
+ unifiedForm.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cancelUnifiedEdit(reset=true){
+ unifiedEditing=null;uCancel.classList.add('hidden');updateUnifiedType();
+ if(reset){unifiedForm.reset();uDate.value='';uDateDisplay.value='';uQty.value=1;uPrice.value=0;uTotal.value=money(0);uType.value='income';uGroup.value='';updateUnifiedType()}
+}
+
+function cancelEdit(kind,reset=true){
+ editing[kind]=null;const map={income:['i','Pemasukan'],student:['s','Penerimaan'],expense:['e','Pengeluaran']},[p,label]=map[kind];
+ document.getElementById(p+'Submit').textContent='Simpan '+label;document.getElementById(p+'Cancel').classList.add('hidden');
+ if(reset){const f=document.getElementById(kind+'Form');f.reset();document.getElementById(p+'Date').value='';document.getElementById(p+'DateDisplay').value='';document.getElementById(p+'Qty').value=1;document.getElementById(p+'Price').value=0;document.getElementById(p+'Total').value=money(0)}
+}
+function editItem(kind,id){
+ const map={income:['i','incomes','Pemasukan'],student:['s','studentReceipts','Penerimaan'],expense:['e','expenses','Pengeluaran']},[p,arr,label]=map[kind],item=db[arr].find(x=>x.id===id);if(!item)return;
+ editing[kind]=id;document.getElementById(p+'Date').value=item.date||'';syncDisplay(p);document.getElementById(p+'Desc').value=item.desc||'';document.getElementById(p+'Qty').value=item.qty??1;document.getElementById(p+'Unit').value=item.unit||'';document.getElementById(p+'Price').value=item.price||0;document.getElementById(p+'Total').value=money(totalOf(item));if(kind==='expense')document.getElementById('eGroup').value=item.group||'';
+ document.getElementById(p+'Submit').textContent='Simpan Perubahan';document.getElementById(p+'Cancel').classList.remove('hidden');document.getElementById(kind+'Form').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function removeItem(arrName,id,label){if(confirm('Hapus catatan '+label+' ini?')){db[arrName]=db[arrName].filter(x=>x.id!==id);save()}}
+function rowsHTML(arr,kind){
+ return arr.map((x,i)=>`<tr><td>${i+1}</td><td>${dateText(x.date)}</td><td>${esc(x.desc)}</td>${kind==='expense'?`<td>${esc(x.group)}</td>`:''}<td class="num">${x.qty}</td><td>${esc(x.unit)}</td><td class="num">${money(x.price)}</td><td class="num">${money(totalOf(x))}</td><td class="no-print"><div class="actions"><button class="alt" onclick="editItem('${kind}','${x.id}')">Edit</button><button class="red" onclick="removeItem('${kind==='income'?'incomes':kind==='student'?'studentReceipts':'expenses'}','${x.id}','${kind}')">Hapus</button></div></td></tr>`).join('');
+}
+function groupExpenses(){const map=new Map();db.expenses.forEach(x=>{const name=x.group?.trim()||'Tanpa Kelompok';if(!map.has(name))map.set(name,[]);map.get(name).push(x)});return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0],'id'))}
+function renderAll(){
+ const t=totals();dOpening.textContent=money(db.opening);dIncome.textContent=money(t.income);dExpense.textContent=money(t.expense);dBalance.textContent=money(t.balance);openingBalance.value=db.opening;
+ incomeRows.innerHTML=rowsHTML(db.incomes,'income');studentRows.innerHTML=rowsHTML(db.studentReceipts,'student');expenseRows.innerHTML=rowsHTML(db.expenses,'expense');
+ incomeTotal.textContent=money(db.incomes.reduce((s,x)=>s+totalOf(x),0));studentTotal.textContent=money(0);expenseTotal.textContent=money(t.expense);
+ noIncome.classList.toggle('hidden',db.incomes.length>0);noStudent.classList.toggle('hidden',db.studentReceipts.length>0);noExpense.classList.toggle('hidden',db.expenses.length>0);
+ 
+ const unifiedRows=[
+  ...db.incomes.map(x=>({...x,kind:'Penerimaan',arr:'incomes',group:'-'})),
+  ...db.expenses.map(x=>({...x,kind:'Pengeluaran',arr:'expenses'}))
+ ].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+ uRows.innerHTML=unifiedRows.map((x,i)=>`<tr><td>${i+1}</td><td>${dateText(x.date)}</td><td>${x.kind}</td><td>${esc(x.desc)}</td><td>${esc(x.group||'-')}</td><td class="num">${x.qty}</td><td>${esc(x.unit)}</td><td class="num">${money(x.price)}</td><td class="num">${money(totalOf(x))}</td><td class="no-print"><button class="alt" onclick="editUnified('${x.arr}','${x.id}')">Edit</button></td></tr>`).join('');
+ uEmpty.classList.toggle('hidden',unifiedRows.length>0);uGrandTotal.textContent=money(t.balance);
+ const groups=groupExpenses();dashboardGroups.innerHTML=groups.length?groups.map(([name,items])=>`<div class="group-card"><div class="headrow"><strong>${esc(name)}</strong><strong>${money(items.reduce((s,x)=>s+totalOf(x),0))}</strong></div><span class="muted">${items.length} transaksi belanja</span></div>`).join(''):'<p class="empty">Belum ada pengeluaran yang dikelompokkan.</p>';
+ const all=[...db.incomes.map(x=>({...x,type:'Pemasukan',in:totalOf(x),out:0,group:'-'})),...db.expenses.map(x=>({...x,type:'Pengeluaran',in:0,out:totalOf(x)}))].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,10);
+ recentRows.innerHTML=all.map(x=>`<tr><td>${dateText(x.date)}</td><td>${x.type}</td><td>${esc(x.desc)}</td><td>${esc(x.group||'-')}</td><td class="num">${money(x.in)}</td><td class="num">${money(x.out)}</td></tr>`).join('');noRecent.classList.toggle('hidden',all.length>0);
+ const names=groups.map(x=>x[0]);const selected=reportGroup.value;reportGroup.innerHTML='<option value="">Semua kelompok</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');if(names.includes(selected))reportGroup.value=selected;
+ groupOptions.innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');
+ storageInfo.textContent=`Tersimpan di browser perangkat ini. Pemasukan: ${db.incomes.length}; penerimaan siswa: ${db.studentReceipts.length}; pengeluaran: ${db.expenses.length}.`;
+ renderReports();
+}
+function renderReports(){
+ const t=totals(),chosen=reportGroup.value;const list=groupExpenses().filter(([name])=>!chosen||name===chosen);
+ rOpening.textContent=money(db.opening);rIncome.textContent=money(t.income);rExpense.textContent=money(chosen?list.reduce((s,[,items])=>s+items.reduce((z,x)=>z+totalOf(x),0),0):t.expense);
+ rBalance.textContent=money(chosen?(Number(db.opening)||0)+t.income-Number(rExpense.dataset.value||0):t.balance);
+ // A selected group report displays the group expense total while keeping the overall cash balance visible.
+ rBalance.textContent=money(t.balance);
+ reportHeading.textContent=chosen?'Rincian Pengeluaran: '+chosen:'Rekap Pengeluaran per Kelompok';
+ printSubtitle.textContent=chosen?'Kelompok laporan: '+chosen:'Rekapitulasi seluruh pemasukan dan pengeluaran';
+ groupReports.innerHTML=list.length?list.map(([name,items])=>{const sum=items.reduce((s,x)=>s+totalOf(x),0);return `<div class="group-card"><div class="headrow"><h3>${esc(name)}</h3><strong>${money(sum)}</strong></div><div class="tablewrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Uraian Belanja</th><th class="num">Qty</th><th>Satuan</th><th class="num">Harga Satuan</th><th class="num">Total</th></tr></thead><tbody>${items.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map((x,i)=>`<tr><td>${i+1}</td><td>${dateText(x.date)}</td><td>${esc(x.desc)}</td><td class="num">${x.qty}</td><td>${esc(x.unit)}</td><td class="num">${money(x.price)}</td><td class="num">${money(totalOf(x))}</td></tr>`).join('')}</tbody><tfoot><tr><th colspan="6">Total ${esc(name)}</th><th class="num">${money(sum)}</th></tr></tfoot></table></div></div>`}).join(''):'<p class="empty">Belum ada data pengeluaran untuk kelompok ini.</p>';
+}
+function printReports(){renderReports();window.print()}
+function exportCSV(){
+ const rows=[['Jenis','Tanggal','Uraian','Kelompok Laporan','Kuantitas','Satuan','Harga Satuan','Total']];
+ db.incomes.forEach(x=>rows.push(['Pemasukan',x.date,x.desc,'-',x.qty,x.unit,x.price,totalOf(x)]));
+ 
+ db.expenses.forEach(x=>rows.push(['Pengeluaran',x.date,x.desc,x.group,x.qty,x.unit,x.price,totalOf(x)]));
+ const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');download(new Blob([csv],{type:'text/csv;charset=utf-8'}),'Rekap_Keuangan_Komite_The_Naff.csv');
+}
+function download(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function backup(){download(new Blob([JSON.stringify({app:'Keuangan Komite SD The Naff',version:10,createdAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'}),'Backup_Keuangan_The_Naff_'+todayISO()+'.json');backupStatus.textContent='File backup berhasil disiapkan.'}
+restoreFile.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text()),incoming=obj.data||obj;if(!Array.isArray(incoming.incomes)||!Array.isArray(incoming.expenses)||!Array.isArray(incoming.studentReceipts))throw Error();if(!confirm('Pulihkan backup? Data saat ini akan diganti dengan isi backup.'))return;db=normalize(incoming);save();backupStatus.textContent='Backup berhasil dipulihkan.'}catch(err){alert('File backup tidak valid atau bukan backup aplikasi ini.')}e.target.value=''}
+function clearAll(){if(confirm('Hapus seluruh data keuangan dari perangkat ini? Pastikan sudah membuat backup.')){db=blankDB();save();backupStatus.textContent='Seluruh data telah dihapus.'}}
+updateUnifiedType();renderAll();
+</script>
+<script>
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("Service worker gagal didaftarkan:", err));
+  });
+}
+</script>
+</body></html>
