@@ -45,3 +45,6 @@ Paket ini tidak mengirim transaksi ke server. Setiap perangkat menyimpan datanya
 ## Versi 12.2
 - Kredit Design by: yb_wiguna · Versi 12.2 ditempatkan langsung di footer aplikasi agar selalu terlihat di bagian kanan bawah.
 - Cache PWA diperbarui agar browser mengambil file terbaru setelah deployment.
+
+## Versi 12.3
+- Menghapus kredit duplikat di bawah footer; hanya satu kredit tersisa di sisi kanan footer.

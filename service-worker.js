@@ -1,4 +1,4 @@
-const CACHE_NAME = "the-naff-keuangan-v3";
+const CACHE_NAME = "the-naff-keuangan-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
