@@ -41,3 +41,7 @@ Paket ini tidak mengirim transaksi ke server. Setiap perangkat menyimpan datanya
 
 ## Versi 12.1
 - Menambahkan kredit kecil di sudut kanan bawah aplikasi: Design by: yb_wiguna · Versi 12.1.
+
+## Versi 12.2
+- Kredit Design by: yb_wiguna · Versi 12.2 ditempatkan langsung di footer aplikasi agar selalu terlihat di bagian kanan bawah.
+- Cache PWA diperbarui agar browser mengambil file terbaru setelah deployment.

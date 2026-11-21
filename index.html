@@ -46,7 +46,8 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertic
 #printHeader .print-brand-text h2{margin:0;font-size:17px}
 #printHeader .print-brand-text p{margin:4px 0 0;color:#334155}
 .report-meta{margin:0 0 12px;color:#475569;font-size:12px}
-.app-credit{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:10px 4px 14px;color:#718096;font-size:10px;letter-spacing:.2px;text-align:right}
+.app-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:8px}
+.app-credit{display:flex;justify-content:flex-end;align-items:center;gap:5px;padding:4px 2px;color:#718096;font-size:10px;letter-spacing:.2px;text-align:right;white-space:nowrap}
 .app-credit strong{color:#52647d;font-weight:700}
 @media print{.app-credit{display:none!important}}
 .signatures{display:flex;justify-content:space-between;gap:25px;margin-top:40px;text-align:center}.signatures>div{width:45%}
@@ -185,7 +186,7 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertic
  <div class="actions"><button onclick="backup()">Unduh Backup Data (JSON)</button><button class="alt" onclick="document.getElementById('restoreFile').click()">Pulihkan dari Backup</button><input id="restoreFile" class="hidden" type="file" accept=".json,application/json"></div><p id="backupStatus" class="muted"></p></div>
  <div class="panel"><h2>Informasi Penyimpanan</h2><p id="storageInfo" class="muted"></p><button class="red" onclick="clearAll()">Hapus Seluruh Data</button></div>
 </section>
-<footer>Aplikasi Keuangan Komite SD The Naff · Data tersimpan lokal pada perangkat · Lakukan backup secara berkala.</footer>
+<footer class="app-footer"><span>Aplikasi Keuangan Komite SD The Naff · Data tersimpan lokal pada perangkat · Lakukan backup secara berkala.</span><span class="app-credit" aria-label="Kredit aplikasi">Design by: <strong>yb_wiguna</strong><span>·</span>Versi 12.2</span></footer>
 </div>
 
 <script>
@@ -471,5 +472,5 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
   });
 }
 </script>
-<div class="app-credit">Design by: <strong>yb_wiguna</strong><span>·</span>Versi 12.1</div>
+<div class="app-credit">Design by: <strong>yb_wiguna</strong><span>·</span>Versi 12.2</div>
 </body></html>
