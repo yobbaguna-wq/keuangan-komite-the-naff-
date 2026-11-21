@@ -39,11 +39,18 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertic
 .calendar-week,.calendar-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}.calendar-week span{font-size:11px;font-weight:700;color:#64748b;padding:5px 0}
 .calendar-days button{padding:8px 0;background:#f1f5f9;color:#172033;border-radius:7px;font-weight:500}.calendar-days button:hover{background:#dbeafe}.calendar-days button.selected{background:#2563eb;color:white}.calendar-days button.today{outline:1px solid #2563eb}.calendar-days button:disabled{visibility:hidden}
 .badge{display:inline-block;background:#eaf1ff;color:#1e40af;padding:4px 8px;border-radius:99px;font-size:12px;font-weight:700}
-#printHeader{display:none}.signatures{display:flex;justify-content:space-between;gap:25px;margin-top:40px;text-align:center}.signatures>div{width:45%}
+#printHeader{display:none}
+#printHeader .print-brand{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:10px}
+#printHeader .print-brand img{width:82px;height:82px;object-fit:contain}
+#printHeader .print-brand-text{text-align:left}
+#printHeader .print-brand-text h2{margin:0;font-size:17px}
+#printHeader .print-brand-text p{margin:4px 0 0;color:#334155}
+.report-meta{margin:0 0 12px;color:#475569;font-size:12px}
+.signatures{display:flex;justify-content:space-between;gap:25px;margin-top:40px;text-align:center}.signatures>div{width:45%}
 .group-card{border:1px solid var(--line);border-radius:10px;padding:13px;margin:10px 0}.group-card h3{margin-bottom:8px}
 @media(max-width:720px){.wrap{padding:11px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:20px}.stat strong{font-size:17px}.field{min-width:calc(50% - 10px)}}
 @media(max-width:420px){.cards{grid-template-columns:1fr 1fr}.field{min-width:100%}.nav button{flex:1}}
-@media print{body{background:#fff;font-size:11px}.no-print,header,.nav,footer,.notice{display:none!important}.wrap{max-width:none;padding:0}.panel{border:0;box-shadow:none;padding:0;margin:0 0 10px}#printHeader{display:block!important;text-align:center;margin-bottom:18px}.cards{grid-template-columns:repeat(4,1fr)}.stat{border:1px solid #bbb;background:white;padding:8px}table{min-width:0;font-size:9px}th,td{padding:5px 4px;border:1px solid #bbb}.signatures{margin-top:35px;break-inside:avoid}.group-card{break-inside:avoid}}
+@media print{@page{size:A4;margin:14mm}body{background:#fff;font-size:11px}.no-print,header,.nav,footer,.notice{display:none!important}.wrap{max-width:none;padding:0}.panel{border:0;box-shadow:none;padding:0;margin:0 0 10px}#printHeader{display:block!important;text-align:center;margin-bottom:18px}#printHeader .print-brand img{print-color-adjust:exact;-webkit-print-color-adjust:exact}.cards{grid-template-columns:repeat(4,1fr)}.stat{border:1px solid #bbb;background:white;padding:8px}table{min-width:0;font-size:9px}th,td{padding:5px 4px;border:1px solid #bbb}.signatures{margin-top:35px;break-inside:avoid}.group-card{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -142,22 +149,40 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertic
 </section>
 
 <section id="reports" class="hidden">
- <div class="panel no-print"><h2>Filter Laporan Pengeluaran</h2><div class="row"><div class="field"><label>Kelompok laporan</label><select id="reportGroup"><option value="">Semua kelompok</option></select></div><button onclick="renderReports()">Tampilkan</button><button class="alt" onclick="printReports()">Cetak / Simpan PDF</button><button class="alt" onclick="exportCSV()">Unduh Excel (CSV)</button></div><p class="muted">Pilih satu kelompok untuk melihat rincian pengeluaran kegiatan tersebut. Pilih Semua kelompok untuk rekap gabungan.</p></div>
+ <div class="panel no-print">
+  <h2>Filter Laporan Keuangan</h2>
+  <div class="row">
+   <div class="field"><label>Periode laporan</label><select id="reportPeriod"><option value="all">Semua periode</option><option value="month">Bulanan</option><option value="year">Tahunan</option></select></div>
+   <div class="field hidden" id="reportMonthField"><label>Bulan</label><select id="reportMonth"></select></div>
+   <div class="field hidden" id="reportYearField"><label>Tahun</label><select id="reportYear"></select></div>
+   <div class="field"><label>Kelompok laporan</label><select id="reportGroup"><option value="">Semua kelompok</option></select></div>
+   <button onclick="renderReports()">Tampilkan</button>
+   <button class="alt" onclick="printReports()">Cetak / Simpan PDF</button>
+   <button class="alt" onclick="exportCSV()">Unduh Excel (CSV)</button>
+  </div>
+  <p class="muted">Pilih semua periode, bulan tertentu, atau satu tahun. Kelompok laporan digunakan untuk menyaring rincian pengeluaran kegiatan.</p>
+ </div>
  <div class="panel" id="reportArea">
-  <div id="printHeader"><h2 style="margin:0">KOMITE SEKOLAH SD THE NAFF</h2><h3>LAPORAN KEUANGAN</h3><p id="printSubtitle"></p></div>
+  <div id="printHeader">
+   <div class="print-brand"><img src="logo-the-naff.png" alt="Logo SD Kreatif The Naff"><div class="print-brand-text"><h2>KOMITE SEKOLAH DASAR KREATIF THE NAFF</h2><p>SIDOARJO</p></div></div>
+   <h3 style="margin:8px 0 4px">LAPORAN KEUANGAN KOMITE</h3>
+   <p id="printSubtitle" class="report-meta"></p>
+  </div>
   <div class="cards"><div class="stat"><small>Saldo Awal</small><strong id="rOpening">Rp0</strong></div><div class="stat"><small>Total Pemasukan</small><strong class="greenText" id="rIncome">Rp0</strong></div><div class="stat"><small>Total Pengeluaran</small><strong class="redText" id="rExpense">Rp0</strong></div><div class="stat"><small>Saldo Akhir</small><strong id="rBalance">Rp0</strong></div></div>
-  <h2 id="reportHeading">Rekap Pengeluaran per Kelompok</h2><div id="groupReports"></div>
+  <h2>Rincian Penerimaan</h2>
+  <div class="tablewrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Uraian Penerimaan</th><th class="num">Kuantitas</th><th>Satuan</th><th class="num">Harga Satuan</th><th class="num">Jumlah</th></tr></thead><tbody id="reportIncomeRows"></tbody><tfoot><tr><th colspan="6">Total Penerimaan</th><th class="num" id="reportIncomeFoot">Rp0</th></tr></tfoot></table></div>
+  <h2 id="reportHeading" style="margin-top:18px">Rincian Pengeluaran per Kelompok</h2><div id="groupReports"></div>
   <div class="signatures"><div>Mengetahui,<br>Ketua Komite<br><br><br><br>(........................................)</div><div>Bendahara<br><br><br><br><br>(........................................)</div></div>
  </div>
 </section>
 
 <section id="backup" class="hidden">
  <div class="panel"><h2>Backup dan Pemulihan Data</h2><div class="notice">Data tersimpan di browser/perangkat ini. Buat backup berkala agar data tidak hilang jika browser atau perangkat bermasalah.</div>
- <p>Backup mencakup saldo awal, pemasukan umum, penerimaan siswa, dan seluruh pengeluaran beserta kelompok laporannya.</p>
+ <p>Backup mencakup saldo awal kas, seluruh transaksi penerimaan, serta pengeluaran beserta kelompok laporan/kegiatannya.</p>
  <div class="actions"><button onclick="backup()">Unduh Backup Data (JSON)</button><button class="alt" onclick="document.getElementById('restoreFile').click()">Pulihkan dari Backup</button><input id="restoreFile" class="hidden" type="file" accept=".json,application/json"></div><p id="backupStatus" class="muted"></p></div>
  <div class="panel"><h2>Informasi Penyimpanan</h2><p id="storageInfo" class="muted"></p><button class="red" onclick="clearAll()">Hapus Seluruh Data</button></div>
 </section>
-<footer>Aplikasi lokal Komite SD The Naff · Buku kas global · Backup data secara berkala.</footer>
+<footer>Aplikasi Keuangan Komite SD The Naff · Data tersimpan lokal pada perangkat · Lakukan backup secara berkala.</footer>
 </div>
 
 <script>
@@ -326,34 +351,115 @@ function renderAll(){
  const groups=groupExpenses();dashboardGroups.innerHTML=groups.length?groups.map(([name,items])=>`<div class="group-card"><div class="headrow"><strong>${esc(name)}</strong><strong>${money(items.reduce((s,x)=>s+totalOf(x),0))}</strong></div><span class="muted">${items.length} transaksi belanja</span></div>`).join(''):'<p class="empty">Belum ada pengeluaran yang dikelompokkan.</p>';
  const all=[...db.incomes.map(x=>({...x,type:'Pemasukan',in:totalOf(x),out:0,group:'-'})),...db.expenses.map(x=>({...x,type:'Pengeluaran',in:0,out:totalOf(x)}))].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,10);
  recentRows.innerHTML=all.map(x=>`<tr><td>${dateText(x.date)}</td><td>${x.type}</td><td>${esc(x.desc)}</td><td>${esc(x.group||'-')}</td><td class="num">${money(x.in)}</td><td class="num">${money(x.out)}</td></tr>`).join('');noRecent.classList.toggle('hidden',all.length>0);
+ refreshReportYears();
  const names=groups.map(x=>x[0]);const selected=reportGroup.value;reportGroup.innerHTML='<option value="">Semua kelompok</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');if(names.includes(selected))reportGroup.value=selected;
  groupOptions.innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');
- storageInfo.textContent=`Tersimpan di browser perangkat ini. Pemasukan: ${db.incomes.length}; penerimaan siswa: ${db.studentReceipts.length}; pengeluaran: ${db.expenses.length}.`;
+ storageInfo.textContent=`Tersimpan di browser perangkat ini. Penerimaan: ${db.incomes.length}; pengeluaran: ${db.expenses.length}.`;
  renderReports();
 }
+const MONTH_NAMES=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+function initReportFilters(){
+ reportMonth.innerHTML=MONTH_NAMES.map((m,i)=>`<option value="${String(i+1).padStart(2,'0')}">${m}</option>`).join('');
+ const years=new Set([String(new Date().getFullYear())]);
+ [...db.incomes,...db.expenses].forEach(x=>{if(x.date)years.add(x.date.slice(0,4))});
+ const sorted=[...years].sort((a,b)=>Number(b)-Number(a));
+ reportYear.innerHTML=sorted.map(y=>`<option value="${y}">${y}</option>`).join('');
+ reportMonth.value=String(new Date().getMonth()+1).padStart(2,'0');
+ reportYear.value=String(new Date().getFullYear());
+ updateReportFilterVisibility();
+}
+function refreshReportYears(){
+ if(!document.getElementById('reportYear'))return;
+ const keep=reportYear.value;
+ const years=new Set([String(new Date().getFullYear())]);
+ [...db.incomes,...db.expenses].forEach(x=>{if(x.date)years.add(x.date.slice(0,4))});
+ const sorted=[...years].sort((a,b)=>Number(b)-Number(a));
+ reportYear.innerHTML=sorted.map(y=>`<option value="${y}">${y}</option>`).join('');
+ if(sorted.includes(keep))reportYear.value=keep;
+}
+function updateReportFilterVisibility(){
+ const mode=reportPeriod.value;
+ reportMonthField.classList.toggle('hidden',mode!=='month');
+ reportYearField.classList.toggle('hidden',mode==='all');
+}
+reportPeriod.addEventListener('change',updateReportFilterVisibility);
+function getReportRange(){
+ const mode=reportPeriod.value;
+ if(mode==='month'){
+  const y=reportYear.value,m=reportMonth.value;
+  return{start:`${y}-${m}-01`,end:new Date(Number(y),Number(m),0).getDate(),endDate:`${y}-${m}-${String(new Date(Number(y),Number(m),0).getDate()).padStart(2,'0')}`,label:`${MONTH_NAMES[Number(m)-1]} ${y}`};
+ }
+ if(mode==='year'){
+  const y=reportYear.value;
+  return{start:`${y}-01-01`,endDate:`${y}-12-31`,label:`Tahun ${y}`};
+ }
+ return{start:null,endDate:null,label:'Seluruh Periode'};
+}
+function reportData(){
+ const range=getReportRange();
+ const inRange=x=>(!range.start||((x.date||'')>=range.start&&(x.date||'')<=range.endDate));
+ const incomes=db.incomes.filter(inRange);
+ const expenses=db.expenses.filter(inRange);
+ const before=(x)=>range.start&&(x.date||'')<range.start;
+ const opening=Number(db.opening||0)
+  +db.incomes.filter(before).reduce((a,x)=>a+totalOf(x),0)
+  -db.expenses.filter(before).reduce((a,x)=>a+totalOf(x),0);
+ const incomeTotal=incomes.reduce((a,x)=>a+totalOf(x),0);
+ const expenseTotal=expenses.reduce((a,x)=>a+totalOf(x),0);
+ return{range,incomes,expenses,opening,incomeTotal,expenseTotal,balance:opening+incomeTotal-expenseTotal};
+}
 function renderReports(){
- const t=totals(),chosen=reportGroup.value;const list=groupExpenses().filter(([name])=>!chosen||name===chosen);
- rOpening.textContent=money(db.opening);rIncome.textContent=money(t.income);rExpense.textContent=money(chosen?list.reduce((s,[,items])=>s+items.reduce((z,x)=>z+totalOf(x),0),0):t.expense);
- rBalance.textContent=money(chosen?(Number(db.opening)||0)+t.income-Number(rExpense.dataset.value||0):t.balance);
- // A selected group report displays the group expense total while keeping the overall cash balance visible.
- rBalance.textContent=money(t.balance);
- reportHeading.textContent=chosen?'Rincian Pengeluaran: '+chosen:'Rekap Pengeluaran per Kelompok';
- printSubtitle.textContent=chosen?'Kelompok laporan: '+chosen:'Rekapitulasi seluruh pemasukan dan pengeluaran';
- groupReports.innerHTML=list.length?list.map(([name,items])=>{const sum=items.reduce((s,x)=>s+totalOf(x),0);return `<div class="group-card"><div class="headrow"><h3>${esc(name)}</h3><strong>${money(sum)}</strong></div><div class="tablewrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Uraian Belanja</th><th class="num">Qty</th><th>Satuan</th><th class="num">Harga Satuan</th><th class="num">Total</th></tr></thead><tbody>${items.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map((x,i)=>`<tr><td>${i+1}</td><td>${dateText(x.date)}</td><td>${esc(x.desc)}</td><td class="num">${x.qty}</td><td>${esc(x.unit)}</td><td class="num">${money(x.price)}</td><td class="num">${money(totalOf(x))}</td></tr>`).join('')}</tbody><tfoot><tr><th colspan="6">Total ${esc(name)}</th><th class="num">${money(sum)}</th></tr></tfoot></table></div></div>`}).join(''):'<p class="empty">Belum ada data pengeluaran untuk kelompok ini.</p>';
+ const data=reportData(),chosen=reportGroup.value;
+ rOpening.textContent=money(data.opening);
+ rIncome.textContent=money(data.incomeTotal);
+ rExpense.textContent=money(data.expenseTotal);
+ rBalance.textContent=money(data.balance);
+ reportHeading.textContent=chosen?'Rincian Pengeluaran: '+chosen:'Rincian Pengeluaran per Kelompok';
+ printSubtitle.textContent=`Periode: ${data.range.label} | Dicetak: ${dateText(todayISO())}`;
+ const incomeRows=data.incomes.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+ reportIncomeRows.innerHTML=incomeRows.length?incomeRows.map((x,i)=>`<tr><td>${i+1}</td><td>${dateText(x.date)}</td><td>${esc(x.desc)}</td><td class="num">${x.qty}</td><td>${esc(x.unit)}</td><td class="num">${money(x.price)}</td><td class="num">${money(totalOf(x))}</td></tr>`).join(''):'<tr><td colspan="7" style="text-align:center">Tidak ada penerimaan pada periode ini.</td></tr>';
+ reportIncomeFoot.textContent=money(data.incomeTotal);
+ const map=new Map();
+ data.expenses.forEach(x=>{const name=x.group?.trim()||'Tanpa Kelompok';if(!map.has(name))map.set(name,[]);map.get(name).push(x)});
+ const groups=[...map.entries()].sort((a,b)=>a[0].localeCompare(b[0],'id')).filter(([name])=>!chosen||name===chosen);
+ groupReports.innerHTML=groups.length?groups.map(([name,items])=>{
+  const sum=items.reduce((a,x)=>a+totalOf(x),0);
+  return `<div class="group-card"><div class="headrow"><h3>${esc(name)}</h3><strong>${money(sum)}</strong></div><div class="tablewrap"><table><thead><tr><th>No.</th><th>Tanggal</th><th>Uraian Belanja</th><th class="num">Qty</th><th>Satuan</th><th class="num">Harga Satuan</th><th class="num">Total</th></tr></thead><tbody>${items.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map((x,i)=>`<tr><td>${i+1}</td><td>${dateText(x.date)}</td><td>${esc(x.desc)}</td><td class="num">${x.qty}</td><td>${esc(x.unit)}</td><td class="num">${money(x.price)}</td><td class="num">${money(totalOf(x))}</td></tr>`).join('')}</tbody><tfoot><tr><th colspan="6">Total ${esc(name)}</th><th class="num">${money(sum)}</th></tr></tfoot></table></div></div>`;
+ }).join(''):'<p class="empty">Belum ada data pengeluaran untuk kelompok dan periode ini.</p>';
 }
 function printReports(){renderReports();window.print()}
 function exportCSV(){
- const rows=[['Jenis','Tanggal','Uraian','Kelompok Laporan','Kuantitas','Satuan','Harga Satuan','Total']];
- db.incomes.forEach(x=>rows.push(['Pemasukan',x.date,x.desc,'-',x.qty,x.unit,x.price,totalOf(x)]));
- 
- db.expenses.forEach(x=>rows.push(['Pengeluaran',x.date,x.desc,x.group,x.qty,x.unit,x.price,totalOf(x)]));
- const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');download(new Blob([csv],{type:'text/csv;charset=utf-8'}),'Rekap_Keuangan_Komite_The_Naff.csv');
+ const data=reportData(),rows=[['Jenis','Tanggal','Uraian','Kelompok Laporan','Kuantitas','Satuan','Harga Satuan','Total']];
+ data.incomes.forEach(x=>rows.push(['Penerimaan',x.date,x.desc,'-',x.qty,x.unit,x.price,totalOf(x)]));
+ data.expenses.filter(x=>!reportGroup.value||((x.group?.trim()||'Tanpa Kelompok')===reportGroup.value)).forEach(x=>rows.push(['Pengeluaran',x.date,x.desc,x.group,x.qty,x.unit,x.price,totalOf(x)]));
+ const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+ const suffix=reportPeriod.value==='all'?'Semua_Periode':reportPeriod.value==='month'?`${reportMonth.value}_${reportYear.value}`:reportYear.value;
+ download(new Blob([csv],{type:'text/csv;charset=utf-8'}),`Rekap_Keuangan_The_Naff_${suffix}.csv`);
 }
 function download(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-function backup(){download(new Blob([JSON.stringify({app:'Keuangan Komite SD The Naff',version:10,createdAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'}),'Backup_Keuangan_The_Naff_'+todayISO()+'.json');backupStatus.textContent='File backup berhasil disiapkan.'}
-restoreFile.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text()),incoming=obj.data||obj;if(!Array.isArray(incoming.incomes)||!Array.isArray(incoming.expenses)||!Array.isArray(incoming.studentReceipts))throw Error();if(!confirm('Pulihkan backup? Data saat ini akan diganti dengan isi backup.'))return;db=normalize(incoming);save();backupStatus.textContent='Backup berhasil dipulihkan.'}catch(err){alert('File backup tidak valid atau bukan backup aplikasi ini.')}e.target.value=''}
-function clearAll(){if(confirm('Hapus seluruh data keuangan dari perangkat ini? Pastikan sudah membuat backup.')){db=blankDB();save();backupStatus.textContent='Seluruh data telah dihapus.'}}
-updateUnifiedType();renderAll();
+function backup(){download(new Blob([JSON.stringify({app:'Keuangan Komite SD The Naff',version:11,createdAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'}),'Backup_Keuangan_The_Naff_'+todayISO()+'.json');backupStatus.textContent='File backup berhasil disiapkan.'}
+restoreFile.onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{
+  const obj=JSON.parse(await f.text()),incoming=obj.data||obj;
+  if(!incoming||!Array.isArray(incoming.incomes)||!Array.isArray(incoming.expenses)||(!Array.isArray(incoming.studentReceipts)&&incoming.studentReceipts!==undefined))throw Error('Struktur backup tidak sesuai');
+  const countIn=incoming.incomes.length+(incoming.studentReceipts||[]).length,countOut=incoming.expenses.length;
+  const ok=confirm(`PERINGATAN PEMULIHAN BACKUP\n\nFile: ${f.name}\nPenerimaan: ${countIn}\nPengeluaran: ${countOut}\n\nData lokal saat ini akan DIGANTI seluruhnya. Disarankan unduh backup data saat ini terlebih dahulu. Lanjutkan?`);
+  if(!ok)return;
+  const phrase=prompt('Untuk memastikan, ketik PULIHKAN (huruf kapital) untuk melanjutkan:');
+  if(phrase!=='PULIHKAN'){backupStatus.textContent='Pemulihan dibatalkan. Data tidak berubah.';return}
+  db=normalize(incoming);save();backupStatus.textContent='Backup berhasil dipulihkan. Periksa saldo dan transaksi pada Dashboard.';
+ }catch(err){alert('File backup tidak valid atau bukan backup aplikasi ini. '+(err.message||''))}
+ e.target.value='';
+}
+function clearAll(){
+ const ok=confirm('PERINGATAN: Seluruh saldo awal, penerimaan, dan pengeluaran pada perangkat ini akan dihapus permanen. Pastikan file backup sudah diunduh. Lanjutkan?');
+ if(!ok)return;
+ const phrase=prompt('Ketik HAPUS SEMUA untuk menghapus seluruh data:');
+ if(phrase!=='HAPUS SEMUA'){backupStatus.textContent='Penghapusan dibatalkan. Data tetap tersimpan.';return}
+ db=blankDB();save();backupStatus.textContent='Seluruh data pada perangkat ini telah dihapus.';
+}
+updateUnifiedType();initReportFilters();renderAll();
 </script>
 <script>
 if ("serviceWorker" in navigator && location.protocol !== "file:") {

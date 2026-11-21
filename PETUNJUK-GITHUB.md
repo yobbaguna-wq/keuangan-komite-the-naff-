@@ -6,6 +6,13 @@
 - `manifest.webmanifest`, `icon-192.png`, `icon-512.png` — dukungan instalasi PWA
 - `service-worker.js` — cache agar aplikasi dapat dibuka kembali saat offline
 
+## Penyempurnaan versi 2
+- Logo The Naff dicantumkan pada hasil cetak laporan.
+- Filter laporan tersedia untuk semua periode, bulanan, dan tahunan.
+- Laporan menampilkan saldo awal periode, penerimaan, pengeluaran, saldo akhir, rincian penerimaan, dan pengeluaran per kelompok.
+- Ekspor CSV mengikuti periode laporan yang dipilih.
+- Pemulihan backup dan penghapusan seluruh data memakai konfirmasi dua tahap.
+
 ## Cara menerbitkan melalui GitHub Pages
 1. Masuk ke GitHub dan buat repository baru, misalnya `keuangan-komite-the-naff`.
 2. Pilih repository **Public** (atau pastikan paket GitHub Anda mendukung Pages untuk repository Private).
