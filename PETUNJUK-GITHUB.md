@@ -48,3 +48,7 @@ Paket ini tidak mengirim transaksi ke server. Setiap perangkat menyimpan datanya
 
 ## Versi 12.3
 - Menghapus kredit duplikat di bawah footer; hanya satu kredit tersisa di sisi kanan footer.
+
+## Versi 12.4
+- Kredit ganda dibersihkan: hanya satu elemen Design by: yb_wiguna · Versi 12.4 berada di footer.
+- Service worker menggunakan strategi network-first untuk halaman aplikasi agar versi terbaru lebih cepat tampil setelah deployment.
